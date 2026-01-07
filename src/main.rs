@@ -64,12 +64,50 @@ fn print_repo_info(repo: &Repository) {
     }
 
     if !code_stats.languages.is_empty() {
-        let langs_str = code_stats.languages.iter()
-            .take(5)
-            .map(|(lang, _, lines)| format!("{} ({})", lang, format_number(*lines)))
-            .collect::<Vec<_>>()
-            .join(", ");
-        println!("  {}  {}", "LOC:".white().bold(), langs_str);
+        print!("  {}  ", "LOC:".white().bold());
+        let langs: Vec<_> = code_stats.languages.iter().take(5).collect();
+        for (i, (lang, _, lines)) in langs.iter().enumerate() {
+            let colored_lang = colorize_lang(lang);
+            print!("{} ({})", colored_lang, format_number(*lines));
+            if i < langs.len() - 1 {
+                print!(", ");
+            }
+        }
+        println!();
+    }
+}
+
+fn colorize_lang(lang: &str) -> ColoredString {
+    match lang {
+        "Rust" => lang.truecolor(222, 165, 132),       // rust orange
+        "Python" => lang.truecolor(55, 118, 171),      // python blue
+        "JavaScript" => lang.truecolor(241, 224, 90),  // js yellow
+        "TypeScript" => lang.truecolor(49, 120, 198),  // ts blue
+        "Go" => lang.truecolor(0, 173, 216),           // go cyan
+        "C" => lang.truecolor(85, 85, 85),             // gray
+        "C++" => lang.truecolor(243, 75, 125),         // pink
+        "Java" => lang.truecolor(176, 114, 25),        // java orange
+        "Ruby" => lang.truecolor(204, 52, 45),         // ruby red
+        "PHP" => lang.truecolor(119, 123, 180),        // php purple
+        "Swift" => lang.truecolor(240, 81, 56),        // swift orange
+        "Kotlin" => lang.truecolor(169, 123, 255),     // kotlin purple
+        "Scala" => lang.truecolor(220, 50, 47),        // scala red
+        "Haskell" => lang.truecolor(94, 80, 134),      // haskell purple
+        "OCaml" => lang.truecolor(238, 122, 0),        // ocaml orange
+        "Elixir" => lang.truecolor(110, 74, 126),      // elixir purple
+        "Erlang" => lang.truecolor(184, 57, 80),       // erlang red
+        "Clojure" => lang.truecolor(91, 184, 0),       // clojure green
+        "Lua" => lang.truecolor(0, 0, 128),            // lua blue
+        "Shell" => lang.truecolor(137, 224, 81),       // shell green
+        "Zig" => lang.truecolor(236, 145, 92),         // zig orange
+        "Nim" => lang.truecolor(255, 233, 83),         // nim yellow
+        "Crystal" => lang.truecolor(0, 0, 0),          // crystal black
+        "Vue" => lang.truecolor(65, 184, 131),         // vue green
+        "Svelte" => lang.truecolor(255, 62, 0),        // svelte orange
+        "React" => lang.truecolor(97, 218, 251),       // react cyan
+        "CSS" => lang.truecolor(86, 61, 124),          // css purple
+        "HTML" => lang.truecolor(227, 76, 38),         // html orange
+        _ => lang.white(),
     }
 }
 
@@ -251,7 +289,7 @@ fn print_contribution_calendar(repo: &Repository) {
         if let Ok(commit) = repo.find_commit(oid) {
             let time = commit.time();
             let date = chrono::DateTime::from_timestamp(time.seconds(), 0)
-                .map(|dt| dt.date_naive());
+                .map(|dt| dt.with_timezone(&Local).date_naive());
 
             if let Some(date) = date {
                 if date >= start_date && date <= today {
