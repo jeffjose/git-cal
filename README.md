@@ -1,29 +1,10 @@
-# cal
+# git-cal
 
-Git contribution calendar in your terminal. Shows a GitHub-style contribution grid alongside repo stats.
-
-## Install
+GitHub-style contribution calendar in your terminal.
 
 ```bash
-cargo install --path .
+git-cal              # current repo
+git-cal /path/to/repo
 ```
 
-## Usage
-
-```bash
-# In a git repository
-cal
-
-# Or specify a path
-cal /path/to/repo
-```
-
-## Output
-
-- Repo name, branch, commit count, size
-- Top contributors and detected languages
-- 52-week contribution calendar grid
-
-## License
-
-MIT
+Shows repo name, branch, commit count, contributors, languages, and a 52-week contribution grid.
