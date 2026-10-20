@@ -5,9 +5,30 @@ use std::collections::HashMap;
 use std::env;
 use std::path::Path;
 
+/// The version and the commit it was built from: `0.1.0-abc1234`, with
+/// `-dirty` if the tree had changes not committed.
+fn version() -> String {
+    // Unset where git could not be asked, or vergen's stand-in.
+    let Some(sha) =
+        option_env!("VERGEN_GIT_SHA").filter(|sha| !sha.is_empty() && !sha.contains("VERGEN"))
+    else {
+        return env!("CARGO_PKG_VERSION").to_string();
+    };
+    let dirty = if option_env!("VERGEN_GIT_DIRTY") == Some("true") {
+        "-dirty"
+    } else {
+        ""
+    };
+    format!("{}-{sha}{dirty}", env!("CARGO_PKG_VERSION"))
+}
+
 fn main() {
     colored::control::set_override(true);
     let path = env::args().nth(1).unwrap_or_else(|| ".".to_string());
+    if path == "-V" || path == "--version" {
+        println!("cal {}", version());
+        return;
+    }
 
     let repo = match Repository::discover(&path) {
         Ok(r) => r,

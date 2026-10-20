@@ -10,6 +10,9 @@ git2 = "0.19"
 chrono = "0.4"
 colored = "2"
 
+[build-dependencies]
+vergen-gitcl = "10.0.3"
+
 [profile.release]
 lto = true
 codegen-units = 1
